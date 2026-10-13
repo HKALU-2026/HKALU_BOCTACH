@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HK ALU - Bóc Tách & Báo Giá Tủ Nhôm</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h2 { color: #d9534f; text-align: center; border-bottom: 2px solid #d9534f; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media(max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #333; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; font-size: 16px; border-radius: 4px; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .result-box { margin-top: 20px; background: #e9ecef; padding: 15px; border-radius: 6px; }
+        .price-tag { font-size: 18px; color: #d9534f; font-weight: bold; }
+        ul { padding-left: 20px; margin: 5px 0; }
+        li { margin-bottom: 4px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>HK ALU - BÓC TÁCH & TÍNH GIÁ TỦ NHÔM</h2>
+    
+    <div class="grid">
+        <!-- Cột nhập liệu -->
+        <div>
+            <h4>1. KÍCH THƯỚC & VẬT TƯ</h4>
+            <div class="form-group">
+                <label>Chiều rộng tủ W (mm):</label>
+                <input type="number" id="w" value="1200">
+            </div>
+            <div class="form-group">
+                <label>Chiều cao tủ H (mm):</label>
+                <input type="number" id="h" value="800">
+            </div>
+            <div class="form-group">
+                <label>Chiều sâu tủ D (mm):</label>
+                <input type="number" id="d" value="350">
+            </div>
+            <div class="form-group">
+                <label>Giá 1 cây nhôm (6m) (VNĐ):</label>
+                <input type="number" id="giaCayNhom" value="250000">
+            </div>
+            <div class="form-group">
+                <label>Đơn giá Kính / Tấm ốp (VNĐ/m²):</label>
+                <input type="number" id="giaVatLieuM2" value="300000">
+            </div>
+            <div class="form-group">
+                <label>Chi phí Phụ kiện & VTP (VNĐ):</label>
+                <input type="number" id="phuKien" value="150000">
+            </div>
+        </div>
+
+        <!-- Cột hiển thị kết quả sơ bộ -->
+        <div>
+            <h4>2. KẾT QUẢ TÍNH TOÁN NHANH</h4>
+            <div class="result-box" id="ketQuaDiv">
+                <b>Nhập thông số và bấm tính toán để xem kết quả...</b>
+            </div>
+            <button onclick="tinhToanTu()">TÍNH TOÁN BÓC TÁCH</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function tinhToanTu() {
+    let w = parseFloat(document.getElementById('w').value) || 0;
+    let h = parseFloat(document.getElementById('h').value) || 0;
+    let d = parseFloat(document.getElementById('d').value) || 0;
+    let giaCayNhom = parseFloat(document.getElementById('giaCayNhom').value) || 0;
+    let giaVatLieuM2 = parseFloat(document.getElementById('giaVatLieuM2').value) || 0;
+    let phuKien = parseFloat(document.getElementById('phuKien').value) || 0;
+
+    let giaMetNhom = giaCayNhom / 6;
+
+    // Giả lập công thức bóc tách cơ bản khung tủ (Cần, ngang, đứng, sâu)
+    let mNhomKhungDung = (h * 2) / 1000;
+    let mNhomKhungNgang = (w * 2) / 1000;
+    let mNhomThanhSau = (d * 4) / 1000;
+    let tongMetNhom = mNhomKhungDung + mNhomKhungNgang + mNhomThanhSau;
+    let chiPhiNhom = tongMetNhom * giaMetNhom * 1.05; // Hao hụt 5%
+
+    // Tính diện tích cánh/vách
+    let dienTichM2 = (w * h) / 1000000;
+    let chiPhiVatLieu = dienTichM2 * giaVatLieuM2;
+
+    // Tổng giá vốn
+    let tongGiaVon = chiPhiNhom + chiPhiVatLieu + phuKien;
+
+    // Hiển thị
+    let html = `
+        <h4>Chi tiết vật tư cắt:</h4>
+        <ul>
+            <li>Thanh đứng khung (2 thanh): <b>${h} mm</b></li>
+            <li>Thanh ngang khung (2 thanh): <b>${w} mm</b></li>
+            <li>Tổng mét dài nhôm (đã gồm 5% hao hụt): <b>${tongMetNhom.toFixed(2)} mét</b></li>
+            <li>Diện tích vách/cánh ước tính: <b>${dienTichM2.toFixed(2)} m²</b></li>
+        </ul>
+        <hr>
+        <span class="price-tag">TỔNG GIÁ VỐN: ${Math.round(tongGiaVon).toLocaleString()} VNĐ</span>
+    `;
+
+    document.getElementById('ketQuaDiv').innerHTML = html;
+}
+</script>
+
+</body>
+</html>
